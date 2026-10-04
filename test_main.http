@@ -1,0 +1,130 @@
+### ========== FastAPI Demo · AI掘金头条 接口测试 ==========
+### 运行前：.venv\Scripts\uvicorn main:app --reload
+### 提示：先用「用户注册/登录」拿到 token，替换下方 {{token}} 的值
+
+### 服务健康检查
+GET http://127.0.0.1:8000/
+
+### 交互式 API 文档（浏览器打开）
+GET http://127.0.0.1:8000/docs
+
+### ========== 用户模块 ==========
+
+### 用户注册
+POST http://127.0.0.1:8000/api/user/register
+Content-Type: application/json
+
+{
+  "username": "alice",
+  "email": "alice@example.com",
+  "password": "secret123"
+}
+
+### 用户登录（返回 token，复制到下方变量）
+POST http://127.0.0.1:8000/api/user/login
+Content-Type: application/json
+
+{
+  "username": "alice",
+  "email": "alice@example.com",
+  "password": "secret123"
+}
+
+### 获取当前用户信息（需认证）
+GET http://127.0.0.1:8000/api/user/info
+Authorization: Bearer {{token}}
+
+### 修改用户信息（需认证）
+PUT http://127.0.0.1:8000/api/user/update
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nickname": "Alice",
+  "bio": "FastAPI 学习者"
+}
+
+### 修改密码（需认证）
+PUT http://127.0.0.1:8000/api/user/password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "old_password": "secret123",
+  "new_password": "newsecret123"
+}
+
+### ========== 新闻模块 ==========
+
+### 获取新闻分类
+GET http://127.0.0.1:8000/api/news/categories
+
+### 获取新闻列表（全部，分页）
+GET http://127.0.0.1:8000/api/news/list?page=1&pageSize=10
+
+### 获取新闻列表（按分类筛选）
+GET http://127.0.0.1:8000/api/news/list?categoryId=1&page=1&pageSize=5
+
+### 获取新闻详情（浏览量+1，含相关推荐）
+GET http://127.0.0.1:8000/api/news/detail?id=1
+
+### ========== 收藏模块（需认证）==========
+
+### 检查收藏状态
+GET http://127.0.0.1:8000/api/favorite/check?newsId=1
+Authorization: Bearer {{token}}
+
+### 添加收藏
+POST http://127.0.0.1:8000/api/favorite/add
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "news_id": 1
+}
+
+### 获取收藏列表
+GET http://127.0.0.1:8000/api/favorite/list?page=1&pageSize=10
+Authorization: Bearer {{token}}
+
+### 取消收藏
+DELETE http://127.0.0.1:8000/api/favorite/remove?newsId=1
+Authorization: Bearer {{token}}
+
+### 清空收藏
+DELETE http://127.0.0.1:8000/api/favorite/clear
+Authorization: Bearer {{token}}
+
+### ========== 浏览历史模块（需认证）==========
+
+### 添加浏览历史
+POST http://127.0.0.1:8000/api/history/add
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "news_id": 2
+}
+
+### 获取浏览历史列表
+GET http://127.0.0.1:8000/api/history/list?page=1&pageSize=10
+Authorization: Bearer {{token}}
+
+### 删除单条浏览历史
+DELETE http://127.0.0.1:8000/api/history/delete/1
+Authorization: Bearer {{token}}
+
+### 清空浏览历史
+DELETE http://127.0.0.1:8000/api/history/clear
+Authorization: Bearer {{token}}
+
+### ========== AI 问答 ==========
+### 未配置 AI_API_KEY 时返回启用提示；配置后调用通义千问大模型
+
+### AI 问答
+POST http://127.0.0.1:8000/api/ai/chat
+Content-Type: application/json
+
+{
+  "question": "FastAPI 是什么？用一句话介绍"
+}
