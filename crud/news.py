@@ -44,7 +44,7 @@ async def increase_news_views(db: AsyncSession, news_id: int) -> bool:
 
 async def get_related_news(db: AsyncSession, news_id: int, category_id: int, limit: int = 5) -> list[News]:
     """相关推荐：优先使用 related_news 关联表，无数据时回退为同分类热门动态计算。"""
-    # 1. related_news 静态关联表（课程推荐系统方案）
+    # 1. related_news 静态关联表（人工维护的推荐位）
     stmt = (
         select(News)
         .join(RelatedNews, RelatedNews.related_news_id == News.id)

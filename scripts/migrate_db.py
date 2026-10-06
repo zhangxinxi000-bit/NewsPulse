@@ -1,9 +1,9 @@
-"""数据库迁移脚本：把 demo 表结构对齐课程 database.sql（幂等，可重复执行）。
+"""数据库迁移脚本：初始化扩展表结构（幂等，可重复执行）。
 
 做的事情：
 1. create_all 建缺失的新表：related_news（新闻关联）、ai_chat（AI 聊天记录）
 2. user 表补充 gender / phone 列（SQLite ALTER TABLE ADD COLUMN）
-3. 导入课程测试账号 admin（密码重置为 admin123，bcrypt 加密），已存在则跳过
+3. 创建内置演示账号 admin（密码 admin123，bcrypt 加密），已存在则跳过
 
 用法：
     .venv\\Scripts\\python scripts\\migrate_db.py
@@ -50,7 +50,7 @@ async def migrate():
         else:
             print("user 表已有 phone 列，跳过")
 
-    # 3. 导入课程测试账号 admin（密码 admin123）
+    # 3. 创建内置演示账号 admin（密码 admin123）
     async with AsyncSessionLocal() as db:
         from sqlalchemy import select
 

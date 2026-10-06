@@ -572,7 +572,7 @@ class AiChat(Base):
     response: Mapped[str] = mapped_column(Text, nullable=False, comment="AI回复")
 ```
 
-- `related_news`：**自己引用自己**的外键（两个列都指向 news.id），表示"新闻 A 关联新闻 B"。这是课程数据库里的"静态推荐"方案；demo 里这张表目前是空的，相关推荐逻辑会**自动回退**到"同分类热门"动态计算（见 6.2）。
+- `related_news`：**自己引用自己**的外键（两个列都指向 news.id），表示"新闻 A 关联新闻 B"。这是"静态推荐"方案（人工维护新闻之间的关联）；demo 里这张表目前是空的，相关推荐逻辑会**自动回退**到"同分类热门"动态计算（见 6.2）。
 - `ai_chat.user_id` 为什么可空？AI 问答允许匿名使用（不强制登录），所以记录归属是可选的。**字段可空性 = 业务规则的数据库表达**。
 - 注意 `related_news` 没有继承 `Base` 的 created_at？——它继承了（`from models.base import Base`），只是没显式写出来。所有模型的 `created_at/updated_at` 都由基类自动提供。
 
@@ -978,7 +978,7 @@ async def increase_news_views(db, news_id: int) -> bool:
 
 
 async def get_related_news(db, news_id: int, category_id: int, limit: int = 5) -> list[News]:
-    # 1. related_news 静态关联表（课程推荐系统方案）
+    # 1. related_news 静态关联表（人工维护的推荐位）
     stmt = (
         select(News)
         .join(RelatedNews, RelatedNews.related_news_id == News.id)
@@ -1815,10 +1815,10 @@ async def init_data():
 2. **幂等（idempotent）**：`if 分类已有数据: return`——重复执行不会写重复数据。**所有初始化脚本都应该幂等**，否则误执行一次就把数据搞坏了。
 3. **为什么要"先 flush 分类拿 id，再写新闻"？** 新闻需要分类 id 外键，所以先把分类插进去拿到自增 id，再通过 `category_map = {c.name: c.id}` 把新闻的 category_id 填上。
 
-### 10.2 scripts/import_course_data.py —— 导入课程真实数据（🟢）
+### 10.2 scripts/import_seed_data.py —— 从外部 SQL 文件批量导入数据（🟢）
 
 ```python
-"""导入课程项目的真实数据（database.sql）到本地 SQLite 数据库。"""
+"""从外部 SQL 转储文件批量导入新闻数据到本地 SQLite 数据库。"""
 import re
 import csv
 import io
@@ -1845,12 +1845,12 @@ async def import_data(sql_path: str):
 1. **解析 MySQL 的 SQL 文件**：用正则抓 `INSERT INTO` 块，用 `csv.reader(quotechar="'")` 解析每行元组（能正确处理字符串里的逗号和引号）。
 2. **踩过的坑**（真实教训）：同一个表有多个 INSERT 块且**列顺序不同**，如果只用一个列名列表去解析，数据会错位。修复：按块独立保存列名。→ 提醒你：**解析异构数据时，永远先检查"每一块的格式是否一致"**。
 3. 清空相关表再写入：`delete(Favorite)` → `delete(History)` → `delete(News)` → `delete(Category)`。注意顺序——先删有外键的子表，再删父表，否则外键约束会报错。**删数据也讲究顺序**。
-4. 这脚本是"把课程数据搬进 demo"的一次性工具，不是核心能力。理解思路即可，**写这类脚本直接让 AI 干**。
+4. 这脚本是"把外部数据导入 demo"的一次性工具，不是核心能力。理解思路即可，**写这类脚本直接让 AI 干**。
 
 ### 10.3 scripts/migrate_db.py —— 表结构迁移（🟡）
 
 ```python
-"""数据库迁移脚本：把 demo 表结构对齐课程 database.sql（幂等，可重复执行）。"""
+"""数据库迁移脚本：初始化扩展表结构（幂等，可重复执行）。"""
 
 async def column_exists(conn, table: str, column: str) -> bool:
     result = await conn.execute(text(f"PRAGMA table_info({table})"))
@@ -1898,7 +1898,7 @@ Write-Host "RESULT: $pass passed, $fail failed"
 
 **为什么要有冒烟测试？（🟡 思想重要）**
 
-- 改完代码（比如今天对齐课程表结构），怎么知道**没把旧功能改坏**？一个个接口手动试太慢。
+- 改完代码（比如今天扩展了表结构），怎么知道**没把旧功能改坏**？一个个接口手动试太慢。
 - 冒烟测试 = 把"核心流程的关键检查"写成脚本，一键跑完，输出 OK/FAIL。
 - 它测的是**真实 HTTP 层**（启动服务 → 发请求 → 验响应），比单元测试更接近用户视角。
 - 注意：**冒烟测试不是正式测试**。真正的项目会用 pytest + TestClient 写自动化单测/集成测（见进阶方向）。
@@ -1978,7 +1978,7 @@ async def main():
 - 新知识点：`isouter=True` = LEFT JOIN（左连接）——即使某个分类没有新闻也能统计出 0，而不是丢行。
 - 这类"验证/调试用的一次性脚本"属于 🟢，写完用完可留可删。
 
-**README.md —— 项目的"说明书"**：记录快速开始、接口清单、配置说明、与课程数据的对齐情况。**写 README 是工程习惯**：让任何人（包括三个月后的你自己）拿到项目就能跑起来。
+**README.md —— 项目的"说明书"**：记录快速开始、接口清单、配置说明、数据模型概览。**写 README 是工程习惯**：让任何人（包括三个月后的你自己）拿到项目就能跑起来。
 
 ---
 
@@ -2079,7 +2079,7 @@ async def main():
 6. **部署**：Nginx 反向代理 + uvicorn 多 worker + systemd。
 7. **监控**：日志结构化、接口耗时统计、错误上报（Sentry）。
 8. **安全加固**：限流（防刷）、HTTPS、密码策略、审计日志。
-9. **加前端**：Vue3 + Vant（课程里有 xwzx-news 前端，可直接对接本后端）。
+9. **加前端**：Vue3 + Vant 移动端新闻 App，可直接对接本后端。
 
 ### 12.4 用 AI 辅助的正确姿势（现代开发者的基本功）
 

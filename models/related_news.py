@@ -7,7 +7,7 @@ from models.base import Base
 class RelatedNews(Base):
     """相关新闻关联表（推荐系统）：news_id 与 related_news_id 双向唯一。
 
-    课程数据库中的静态推荐关联；demo 中若表中无数据，相关推荐回退为
+    用于维护静态推荐关联；demo 中若表中无数据，相关推荐回退为
     同分类热门动态计算（见 crud/news.py get_related_news）。
     """
 

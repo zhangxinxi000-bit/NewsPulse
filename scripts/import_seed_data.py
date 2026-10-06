@@ -1,10 +1,10 @@
-"""导入课程项目的真实数据（database.sql）到本地 SQLite 数据库。
+"""从外部 SQL 转储文件批量导入新闻数据到本地 SQLite 数据库。
 
 用法：
-    .venv\\Scripts\\python scripts\\import_course_data.py <sql文件路径>
+    .venv\\Scripts\\python scripts\\import_seed_data.py <sql文件路径>
 
 说明：
-- 解析 MySQL 版 database.sql 中的 news_category / news 的 INSERT 数据。
+- 解析 MySQL 版 SQL 转储文件中的 news_category / news 的 INSERT 数据。
 - 导入前会清空 news、news_category、favorite、history 四张表（用户表保留）。
 - 幂等：可重复执行。
 """
@@ -140,6 +140,6 @@ async def import_data(sql_path: str):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("用法：python scripts/import_course_data.py <database.sql路径>")
+        print("用法：python scripts/import_seed_data.py <sql文件路径>")
         sys.exit(1)
     asyncio.run(import_data(sys.argv[1]))
