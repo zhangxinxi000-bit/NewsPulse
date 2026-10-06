@@ -1,4 +1,4 @@
-# FastAPI Demo · 从零到实战教学文档
+# NewsPulse · 从零到实战教学文档
 
 > 目标：读完这份文档，你不仅能看懂 demo 里每一行代码，还能把它变成自己的项目实战经验。
 > 面向对象：把 FastAPI 当第一门 Web 框架学习的小白，或想系统梳理后端知识的中级开发者。
@@ -31,7 +31,7 @@
 
 ### 1.1 这个 demo 是什么
 
-一个**新闻资讯 App 的后端 API 服务**（对标今日头条/网易新闻的后台），名字叫"AI 掘金头条"。它提供了：
+一个**新闻资讯类产品的后端 API 服务**（项目代号 NewsPulse）。它提供了：
 
 - 用户系统：注册、登录、改资料、改密码
 - 新闻系统：分类浏览、列表分页、详情（带浏览量）、相关推荐
@@ -60,7 +60,7 @@
 ### 1.3 目录结构总览
 
 ```
-fastapi_demo/
+newspulse/
 ├── main.py                  # 入口：装配整个应用
 ├── requirements.txt         # 依赖清单
 ├── test_main.http           # 接口手动测试清单
@@ -1726,8 +1726,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="FastAPI Demo · AI掘金头条",
-    description="基于 FastAPI + SQLAlchemy 异步 ORM 的新闻系统 Demo：用户认证、新闻浏览、收藏、浏览历史、Redis 缓存、AI 问答。",
+    title="NewsPulse API",
+    description="基于 FastAPI + SQLAlchemy 异步 ORM 的新闻系统后端：用户认证、新闻浏览、收藏、浏览历史、Redis 缓存、AI 问答。",
     version="1.0.0",
     lifespan=lifespan,
 )
@@ -1751,7 +1751,7 @@ app.include_router(ai.router)
 
 @app.get("/", summary="服务健康检查")
 async def root():
-    return {"message": "FastAPI Demo is running", "docs": "/docs"}
+    return {"message": "NewsPulse API is running", "docs": "/docs"}
 ```
 
 **逐段讲解：**

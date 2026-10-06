@@ -1,4 +1,4 @@
-### ========== FastAPI Demo · AI掘金头条 接口测试 ==========
+### ========== NewsPulse API 接口测试 ==========
 ### 运行前：.venv\Scripts\uvicorn main:app --reload
 ### 提示：先用「用户注册/登录」拿到 token，替换下方 {{token}} 的值
 

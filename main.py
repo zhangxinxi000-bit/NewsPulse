@@ -18,8 +18,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="FastAPI Demo · AI掘金头条",
-    description="基于 FastAPI + SQLAlchemy 异步 ORM 的新闻系统 Demo：用户认证、新闻浏览、收藏、浏览历史、Redis 缓存、AI 问答。",
+    title="NewsPulse API",
+    description="基于 FastAPI + SQLAlchemy 异步 ORM 的新闻系统后端：用户认证、新闻浏览、收藏、浏览历史、Redis 缓存、AI 问答。",
     version="1.0.0",
     lifespan=lifespan,
 )
@@ -46,4 +46,4 @@ app.include_router(ai.router)
 
 @app.get("/", summary="服务健康检查")
 async def root():
-    return {"message": "FastAPI Demo is running", "docs": "/docs"}
+    return {"message": "NewsPulse API is running", "docs": "/docs"}

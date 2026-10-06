@@ -61,11 +61,11 @@ async def migrate():
             db.add(
                 User(
                     username="admin",
-                    email="admin@demo.com",
+                    email="admin@newspulse.local",
                     hashed_password=get_hash_password("admin123"),
-                    nickname="测试用户",
+                    nickname="Admin",
                     gender="unknown",
-                    bio="这是一个测试账号",
+                    bio="Site administrator",
                 )
             )
             await db.commit()

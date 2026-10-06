@@ -1,9 +1,9 @@
-# FastAPI Demo · AI 头条
+# NewsPulse
 
 基于 **FastAPI + 异步 SQLAlchemy + SQLite** 的新闻系统后端项目，包含用户认证、新闻浏览、收藏、浏览历史、Redis 缓存（自动降级）与 AI 问答。
 
 > 📖 **从零到实战教学文档**（逐文件讲解 + 代码为什么这么写 + 学习重点分级）：
-> `docs/FastAPI-Demo从零到实战教学文档.md`
+> `docs/NewsPulse-从零到实战教学文档.md`
 
 ## 快速开始
 
@@ -53,7 +53,7 @@ python -m venv .venv
 ## 项目结构
 
 ```
-fastapi_demo/
+newspulse/
 ├── main.py               # 应用入口：CORS、异常注册、路由挂载、启动建表
 ├── config/
 │   ├── db_conf.py        # 异步数据库引擎与会话（默认 SQLite，可切 MySQL）
